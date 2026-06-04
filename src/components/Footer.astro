@@ -1,0 +1,15 @@
+---
+import data from '../data/data.json';
+
+const year = new Date().getFullYear();
+const today = new Date().toISOString().split('T')[0];
+---
+
+<footer class="site-footer">
+  <p>
+    {data.titre} n'est pas affilie au Kodokan ni a l'IJF. Toutes les techniques
+    de judo mentionnees appartiennent au patrimoine du judo et sont repertoriees
+    selon la nomenclature officielle du Kodokan.
+  </p>
+  <p class="updated">Derniere mise a jour : {today} &middot; &copy; {year} {data.titre}</p>
+</footer>

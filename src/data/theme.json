@@ -1,0 +1,27 @@
+{
+  "couleurs": {
+    "primary": "#2B4C7E",
+    "accent": "#D4AF37",
+    "bg": "#F7F5F0",
+    "bgCard": "#FFFFFF",
+    "text": "#1A1A1A",
+    "textMuted": "#6B6B6B",
+    "correct": "#C62828",
+    "close": "#D4AF37",
+    "wrong": "#E0E0E0",
+    "danger": "#4A4A4A"
+  },
+  "typo": {
+    "titre": "Noto Sans JP",
+    "corps": "Inter"
+  },
+  "style": {
+    "borderRadius": "4px",
+    "borderColor": "rgba(0,0,0,0.08)"
+  },
+  "ton_editorial": "respectueux et pedagogique",
+  "accroche_hero": "Devine la technique de judo du jour",
+  "victoire": "Ippon !",
+  "defaite": "Matte !",
+  "share_label": "Partager mon resultat"
+}
