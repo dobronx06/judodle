@@ -11,7 +11,7 @@ interface Props {
 const { title = data.titre, description = data.description } = Astro.props;
 
 const fontFamilies = [
-  `${theme.typo.titre.replace(/ /g, '+')}:wght@400;700`,
+  theme.typo.titre.replace(/ /g, '+'),
   `${theme.typo.corps.replace(/ /g, '+')}:wght@400;500;600;700`,
 ];
 const fontUrl = `https://fonts.googleapis.com/css2?${fontFamilies.map((f) => `family=${f}`).join('&')}&display=swap`;

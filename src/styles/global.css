@@ -21,10 +21,24 @@ html {
 
 body {
   font-family: var(--font-corps);
-  background-color: var(--color-bg);
+  background: var(--color-bg) url('/bg.webp') center center / cover no-repeat fixed;
   color: var(--color-text);
   line-height: 1.6;
   min-height: 100dvh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(21, 18, 16, 0.82);
+  z-index: 0;
+  pointer-events: none;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 img {
