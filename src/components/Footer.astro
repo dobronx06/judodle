@@ -1,15 +1,19 @@
 ---
 import data from '../data/data.json';
+import { t, type Locale } from '../i18n';
 
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 const year = new Date().getFullYear();
 const today = new Date().toISOString().split('T')[0];
 ---
 
 <footer class="site-footer">
   <p>
-    {data.titre} n'est pas affilie au Kodokan ni a l'IJF. Toutes les techniques
-    de judo mentionnees appartiennent au patrimoine du judo et sont repertoriees
-    selon la nomenclature officielle du Kodokan.
+    {t(locale, 'footer.disclaimer', { title: data.titre })}
   </p>
-  <p class="updated">Derniere mise a jour : {today} &middot; &copy; {year} {data.titre}</p>
+  <p class="updated">{t(locale, 'footer.last_updated', { date: today })} &middot; &copy; {year} {data.titre}</p>
 </footer>
