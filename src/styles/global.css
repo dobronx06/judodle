@@ -1115,11 +1115,11 @@ a {
     z-index: 40;
   }
 
-  .judata-banner--side:first-of-type {
+  .judata-banner--side:nth-of-type(1) {
     left: 16px;
   }
 
-  .judata-banner--side:last-of-type {
+  .judata-banner--side:nth-of-type(2) {
     right: 16px;
   }
 
