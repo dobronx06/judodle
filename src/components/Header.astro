@@ -13,6 +13,7 @@ const { locale } = Astro.props;
 <header class="site-header">
   <a href={localePath(locale)} class="site-logo">{data.titre}</a>
   <nav>
+    <a href={`/${locale}/techniques/`} class="header-link">{t(locale, 'nav.techniques')}</a>
     <span
       id="streak-display"
       class="streak-display"

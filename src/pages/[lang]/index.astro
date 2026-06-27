@@ -19,114 +19,108 @@ const i18nStrings = getTranslations(locale);
 ---
 
 <Layout locale={locale}>
-  <div class="page-wrapper">
-    <JudataBanner variant="side" />
+  <JudataBanner variant="side" />
+  <JudataBanner variant="side" />
+  <JudataBanner variant="bottom" />
 
-    <div class="game-column">
-      <div style="display:flex;flex-direction:column;min-height:100dvh;">
-        <Header locale={locale} />
+  <div style="display:flex;flex-direction:column;min-height:100dvh;">
+    <Header locale={locale} />
 
-        <main class="container" style="flex:1;">
-          <!-- Hero -->
-          <section class="hero">
-            <h1 class="font-display">{data.titre}</h1>
-            <p class="tagline">{t(locale, 'hero.tagline')}</p>
-            <div class="divider" aria-hidden="true"></div>
-          </section>
+    <main class="container" style="flex:1;">
+      <!-- Hero -->
+      <section class="hero">
+        <h1 class="font-display">{data.titre}</h1>
+        <p class="tagline">{t(locale, 'hero.tagline')}</p>
+        <div class="divider" aria-hidden="true"></div>
+      </section>
 
-          <!-- Mode tabs (hidden if single mode) -->
-          {showTabs && (
-            <nav class="mode-tabs" id="mode-tabs" role="tablist" aria-label={t(locale, 'game.modes')}>
-              {modes.map((mode, i) => (
-                <button
-                  role="tab"
-                  class="mode-tab"
-                  data-mode={mode.id}
-                  aria-selected={i === 0 ? 'true' : 'false'}
-                  aria-controls={`panel-${mode.id}`}
-                  id={`tab-${mode.id}`}
-                >
-                  <span aria-hidden="true">{mode.icon}</span>
-                  {mode.label}
-                </button>
-              ))}
-            </nav>
+      <!-- Mode tabs (hidden if single mode) -->
+      {showTabs && (
+        <nav class="mode-tabs" id="mode-tabs" role="tablist" aria-label={t(locale, 'game.modes')}>
+          {modes.map((mode, i) => (
+            <button
+              role="tab"
+              class="mode-tab"
+              data-mode={mode.id}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls={`panel-${mode.id}`}
+              id={`tab-${mode.id}`}
+            >
+              <span aria-hidden="true">{mode.icon}</span>
+              {mode.label}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      <!-- Game panels -->
+      {modes.map((mode, i) => (
+        <section
+          id={`panel-${mode.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${mode.id}`}
+          class="game-section"
+          data-mode-panel={mode.id}
+          hidden={i !== 0}
+        >
+          <!-- Clue area for non-classique modes -->
+          {mode.id !== 'classique' && (
+            <div class="clue-panel" id={`clue-${mode.id}`}>
+              {mode.id === 'emoji' && (
+                <p class="clue-emoji" id="emoji-display" aria-label={t(locale, 'game.emoji_clues')}>...</p>
+              )}
+              {mode.id === 'capacite' && (
+                <p class="clue-text" id="capacite-display">...</p>
+              )}
+              {mode.id === 'image' && (
+                <div class="clue-image" id="image-display">
+                  <span>{t(locale, 'game.no_image')}</span>
+                </div>
+              )}
+            </div>
           )}
 
-          <!-- Game panels -->
-          {modes.map((mode, i) => (
-            <section
-              id={`panel-${mode.id}`}
-              role="tabpanel"
-              aria-labelledby={`tab-${mode.id}`}
-              class="game-section"
-              data-mode-panel={mode.id}
-              hidden={i !== 0}
-            >
-              <!-- Clue area for non-classique modes -->
-              {mode.id !== 'classique' && (
-                <div class="clue-panel" id={`clue-${mode.id}`}>
-                  {mode.id === 'emoji' && (
-                    <p class="clue-emoji" id="emoji-display" aria-label={t(locale, 'game.emoji_clues')}>...</p>
-                  )}
-                  {mode.id === 'capacite' && (
-                    <p class="clue-text" id="capacite-display">...</p>
-                  )}
-                  {mode.id === 'image' && (
-                    <div class="clue-image" id="image-display">
-                      <span>{t(locale, 'game.no_image')}</span>
-                    </div>
-                  )}
-                </div>
-              )}
+          <!-- Classique: attribute grid -->
+          {mode.id === 'classique' && (
+            <div class="guess-grid">
+              <div class="guess-grid-inner">
+                <div class="guess-header" id="guess-header"></div>
+                <div id="guess-body-classique"></div>
+              </div>
+            </div>
+          )}
 
-              <!-- Classique: attribute grid -->
-              {mode.id === 'classique' && (
-                <div class="guess-grid">
-                  <div class="guess-grid-inner">
-                    <div class="guess-header" id="guess-header"></div>
-                    <div id="guess-body-classique"></div>
-                  </div>
-                </div>
-              )}
+          <!-- Non-classique: simple guess list -->
+          {mode.id !== 'classique' && (
+            <div id={`guess-body-${mode.id}`}></div>
+          )}
+        </section>
+      ))}
 
-              <!-- Non-classique: simple guess list -->
-              {mode.id !== 'classique' && (
-                <div id={`guess-body-${mode.id}`}></div>
-              )}
-            </section>
-          ))}
-
-          <!-- Search input -->
-          <div class="search-wrapper game-section" id="search-wrapper">
-            <label for="search-input" class="sr-only">{t(locale, 'game.search_label')}</label>
-            <input
-              type="text"
-              id="search-input"
-              class="search-input"
-              placeholder={t(locale, 'game.search_placeholder')}
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-            />
-            <ul class="search-dropdown" id="search-dropdown" role="listbox" hidden></ul>
-          </div>
-
-          <!-- Guess counter -->
-          <p class="guess-counter" id="guess-counter" aria-live="polite"></p>
-
-          <!-- Game over -->
-          <div id="game-over" hidden></div>
-        </main>
-
-        <Footer locale={locale} />
+      <!-- Search input -->
+      <div class="search-wrapper game-section" id="search-wrapper">
+        <label for="search-input" class="sr-only">{t(locale, 'game.search_label')}</label>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder={t(locale, 'game.search_placeholder')}
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <ul class="search-dropdown" id="search-dropdown" role="listbox" hidden></ul>
       </div>
-    </div>
 
-    <JudataBanner variant="side" />
+      <!-- Guess counter -->
+      <p class="guess-counter" id="guess-counter" aria-live="polite"></p>
+
+      <!-- Game over -->
+      <div id="game-over" hidden></div>
+    </main>
+
+    <Footer locale={locale} />
   </div>
-
-  <JudataBanner variant="bottom" />
 
   <!-- Embed data at build time -->
   <script type="application/json" id="game-data" set:html={JSON.stringify(data)} />

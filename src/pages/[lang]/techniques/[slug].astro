@@ -1,0 +1,166 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import JudataBanner from '../../../components/JudataBanner.astro';
+import data from '../../../data/data.json';
+import { t, localePath, locales, type Locale } from '../../../i18n';
+
+export function getStaticPaths() {
+  const slug = (nom: string) => nom.toLowerCase().replace(/ /g, '-');
+  const paths: { params: { lang: string; slug: string }; props: { entity: typeof data.entites[0] } }[] = [];
+  for (const lang of locales) {
+    for (const entity of data.entites) {
+      paths.push({
+        params: { lang, slug: slug(entity.nom) },
+        props: { entity },
+      });
+    }
+  }
+  return paths;
+}
+
+function toSlug(nom: string): string {
+  return nom.toLowerCase().replace(/ /g, '-');
+}
+
+const { lang } = Astro.params;
+const locale = lang as Locale;
+const { entity } = Astro.props;
+
+const entities = data.entites;
+const related = entities.filter(
+  (e) => e.attributs.group === entity.attributs.group && e.id !== entity.id
+);
+
+const groupLabelKeys: Record<string, string> = {
+  'Te-waza': 'tech.te_waza',
+  'Koshi-waza': 'tech.koshi_waza',
+  'Ashi-waza': 'tech.ashi_waza',
+  'Ma-sutemi-waza': 'tech.ma_sutemi_waza',
+  'Yoko-sutemi-waza': 'tech.yoko_sutemi_waza',
+  'Osaekomi-waza': 'tech.osaekomi_waza',
+  'Shime-waza': 'tech.shime_waza',
+  'Kansetsu-waza': 'tech.kansetsu_waza',
+};
+
+const categoryFr = entity.attributs.category === 'Nage-waza'
+  ? t(locale, 'tech.nage_waza_fr')
+  : t(locale, 'tech.katame_waza_fr');
+
+const positionFr = entity.attributs.standingOrGround === 'Tachi-waza'
+  ? t(locale, 'tech.tachi_waza_fr')
+  : t(locale, 'tech.ne_waza_fr');
+
+const groupLabel = t(locale, groupLabelKeys[entity.attributs.group] ?? entity.attributs.group);
+
+const metaDescription = t(locale, 'tech.meta_desc', {
+  name: entity.nom,
+  translation: entity.attributs.translation,
+  group: entity.attributs.group,
+});
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${entity.nom} — ${entity.attributs.translation}`,
+  "description": metaDescription,
+  "publisher": {
+    "@type": "Organization",
+    "name": "Judodle",
+    "url": "https://judodle.com",
+  },
+  "inLanguage": locale,
+};
+---
+
+<Layout
+  locale={locale}
+  title={`${entity.nom} (${entity.attributs.translation}) | Judodle`}
+  description={metaDescription}
+>
+  <JudataBanner variant="side" />
+  <JudataBanner variant="side" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div style="display:flex;flex-direction:column;min-height:100dvh;">
+    <Header locale={locale} />
+
+    <main class="container container--narrow" style="flex:1; padding-bottom: 3rem;">
+      <!-- Breadcrumb -->
+      <nav class="tech-breadcrumb">
+        <a href={localePath(locale)}>{data.titre}</a>
+        <span aria-hidden="true">/</span>
+        <a href={`/${locale}/techniques/`}>{t(locale, 'nav.techniques')}</a>
+        <span aria-hidden="true">/</span>
+        <span>{entity.nom}</span>
+      </nav>
+
+      <!-- Title -->
+      <header class="tech-detail-header">
+        <h1 class="font-display tech-detail-title">{entity.nom}</h1>
+        <p class="tech-detail-subtitle">{entity.attributs.translation}</p>
+      </header>
+
+      <!-- Description paragraphs -->
+      <article class="tech-detail-content">
+        <p>
+          {t(locale, 'tech.is_a', {
+            name: entity.nom,
+            translation: entity.attributs.translation,
+            category: entity.attributs.category,
+            category_fr: categoryFr,
+            group: entity.attributs.group,
+            group_fr: `${groupLabel} (${entity.attributs.group})`,
+          })}
+        </p>
+        <p>{t(locale, 'tech.appeared', { appearance: entity.attributs.firstAppearance })}</p>
+        <p>{t(locale, 'tech.performed', { position: entity.attributs.standingOrGround, position_fr: positionFr })}</p>
+      </article>
+
+      <!-- Attribute cards -->
+      <div class="tech-attrs">
+        <div class="tech-attr-card">
+          <span class="tech-attr-label">{t(locale, 'tech.category')}</span>
+          <span class="tech-attr-value">{entity.attributs.category}</span>
+        </div>
+        <div class="tech-attr-card">
+          <span class="tech-attr-label">{t(locale, 'tech.group')}</span>
+          <span class="tech-attr-value">{entity.attributs.group}</span>
+        </div>
+        <div class="tech-attr-card">
+          <span class="tech-attr-label">{t(locale, 'tech.standingOrGround')}</span>
+          <span class="tech-attr-value">{entity.attributs.standingOrGround}</span>
+        </div>
+        <div class="tech-attr-card">
+          <span class="tech-attr-label">{t(locale, 'tech.firstAppearance')}</span>
+          <span class="tech-attr-value">{entity.attributs.firstAppearance}</span>
+        </div>
+      </div>
+
+      <!-- Play CTA -->
+      <a href={localePath(locale)} class="tech-play-cta">
+        <span aria-hidden="true">🥋</span> {t(locale, 'tech.playGame')}
+      </a>
+
+      <!-- Related techniques -->
+      {related.length > 0 && (
+        <section class="tech-related">
+          <h2 class="tech-related-title">{t(locale, 'tech.related')}</h2>
+          <p class="tech-related-subtitle">{entity.attributs.group} &mdash; {groupLabel}</p>
+          <div class="tech-grid">
+            {related.map((rel) => (
+              <a href={`/${locale}/techniques/${toSlug(rel.nom)}/`} class="tech-card">
+                <span class="tech-card-name">{rel.nom}</span>
+                <span class="tech-card-translation">{rel.attributs.translation}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+
+    <Footer locale={locale} />
+  </div>
+</Layout>

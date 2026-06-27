@@ -1,0 +1,104 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import JudataBanner from '../../../components/JudataBanner.astro';
+import data from '../../../data/data.json';
+import { t, localePath, locales, type Locale } from '../../../i18n';
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const locale = lang as Locale;
+
+const entities = data.entites;
+
+// Group entities by category then by group
+const groups: Record<string, Record<string, typeof entities>> = {};
+for (const e of entities) {
+  const cat = e.attributs.category;
+  const grp = e.attributs.group;
+  if (!groups[cat]) groups[cat] = {};
+  if (!groups[cat][grp]) groups[cat][grp] = [];
+  groups[cat][grp].push(e);
+}
+
+function toSlug(nom: string): string {
+  return nom.toLowerCase().replace(/ /g, '-');
+}
+
+const groupLabelKeys: Record<string, string> = {
+  'Te-waza': 'tech.te_waza',
+  'Koshi-waza': 'tech.koshi_waza',
+  'Ashi-waza': 'tech.ashi_waza',
+  'Ma-sutemi-waza': 'tech.ma_sutemi_waza',
+  'Yoko-sutemi-waza': 'tech.yoko_sutemi_waza',
+  'Osaekomi-waza': 'tech.osaekomi_waza',
+  'Shime-waza': 'tech.shime_waza',
+  'Kansetsu-waza': 'tech.kansetsu_waza',
+};
+
+const categoryOrder = ['Nage-waza', 'Katame-waza'];
+const groupOrder = [
+  'Te-waza', 'Koshi-waza', 'Ashi-waza', 'Ma-sutemi-waza', 'Yoko-sutemi-waza',
+  'Osaekomi-waza', 'Shime-waza', 'Kansetsu-waza',
+];
+---
+
+<Layout
+  locale={locale}
+  title={`${t(locale, 'tech.page_title')} | Judodle`}
+  description={t(locale, 'tech.page_description')}
+>
+  <JudataBanner variant="side" />
+  <JudataBanner variant="side" />
+
+  <div style="display:flex;flex-direction:column;min-height:100dvh;">
+    <Header locale={locale} />
+
+    <main class="container" style="flex:1; padding-bottom: 3rem;">
+      <!-- Back to game -->
+      <a href={localePath(locale)} class="tech-back-link">
+        <span aria-hidden="true">&larr;</span> {t(locale, 'tech.backToGame')}
+      </a>
+
+      <section class="tech-hero">
+        <h1 class="font-display">{t(locale, 'tech.page_title')}</h1>
+        <p class="tech-intro">{t(locale, 'tech.intro')}</p>
+      </section>
+
+      {categoryOrder.map((cat) => (
+        <section class="tech-category-section">
+          <h2 class="tech-category-title font-display">
+            <span class="tech-category-icon" aria-hidden="true">{cat === 'Nage-waza' ? '🥋' : '🤼'}</span>
+            {cat}
+          </h2>
+          <p class="tech-category-desc">
+            {t(locale, cat === 'Nage-waza' ? 'tech.nage_intro' : 'tech.katame_intro')}
+          </p>
+
+          {groupOrder.filter((g) => groups[cat]?.[g]).map((grp) => (
+            <div class="tech-group-section" id={grp.toLowerCase()}>
+              <h3 class="tech-group-title">
+                {grp} <span class="tech-group-label">&mdash; {t(locale, groupLabelKeys[grp] ?? grp)}</span>
+                <span class="tech-count">{t(locale, 'tech.techniques_count', { count: String(groups[cat][grp].length) })}</span>
+              </h3>
+              <div class="tech-grid">
+                {groups[cat][grp].map((entity) => (
+                  <a href={`/${locale}/techniques/${toSlug(entity.nom)}/`} class="tech-card">
+                    <span class="tech-card-name">{entity.nom}</span>
+                    <span class="tech-card-translation">{entity.attributs.translation}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      ))}
+    </main>
+
+    <Footer locale={locale} />
+  </div>
+</Layout>
