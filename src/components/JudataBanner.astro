@@ -1,0 +1,37 @@
+---
+interface Props {
+  variant: 'side' | 'bottom';
+}
+
+const { variant } = Astro.props;
+---
+
+{variant === 'side' && (
+  <aside class="judata-banner judata-banner--side">
+    <a href="https://judata.app" target="_blank" rel="noopener noreferrer" class="judata-banner__link">
+      <div class="judata-banner__logo">J</div>
+      <div class="judata-banner__title">Judata</div>
+      <p class="judata-banner__text">Track your judo journey</p>
+      <div class="judata-banner__separator"></div>
+      <ul class="judata-banner__features">
+        <li>Log fights</li>
+        <li>Analyze stats</li>
+        <li>Track progress</li>
+      </ul>
+      <span class="judata-banner__cta">Try Judata</span>
+    </a>
+  </aside>
+)}
+
+{variant === 'bottom' && (
+  <aside class="judata-banner judata-banner--bottom">
+    <a href="https://judata.app" target="_blank" rel="noopener noreferrer" class="judata-banner__link judata-banner__link--horizontal">
+      <div class="judata-banner__logo judata-banner__logo--small">J</div>
+      <div class="judata-banner__info">
+        <span class="judata-banner__title judata-banner__title--small">Judata</span>
+        <span class="judata-banner__text judata-banner__text--small">Your judo journal</span>
+      </div>
+      <span class="judata-banner__cta judata-banner__cta--small">Download</span>
+    </a>
+  </aside>
+)}
